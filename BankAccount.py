@@ -1,53 +1,70 @@
 class BankAccount:
-    def __init__(self, acc_num, holder, initial_balance):
-        self.__account_number = acc_num
-        self.__account_holder = holder
-        self.__balance = initial_balance
+    def __init__(self, acc_num, holder, initial_balance=0.0):
+        # Private attributes
+        self._account_number = acc_num
+        self._account_holder = holder
+        self._balance = initial_balance
+        self._transactions = []  # bonus: transaction history
 
+    # Read-only account number
     @property
     def account_number(self):
-        return self.__account_number
+        return self._account_number
 
+    # Balance getter
     @property
     def balance(self):
-        return self.__balance
+        return self._balance
 
+    # Balance setter with validation
     @balance.setter
     def balance(self, amount):
         if amount < 0:
-            print("Balance cannot be negative.")
-        else:
-            self.__balance = amount
+            raise ValueError("Balance cannot be negative.")
+        self._balance = amount
 
+    # Deposit method
     def deposit(self, amount):
-        if amount > 0:
-            self.__balance += amount
-            print(f"Deposited: {amount}")
-        else:
-            print("Deposit amount must be positive.")
+        if amount <= 0:
+            print("Deposit must be greater than zero.")
+            return
 
+        self._balance += amount
+        self._transactions.append(f"Deposited {amount}")
+        print(f"Deposited {amount}. New balance: {self._balance}")
+
+    # Withdraw method
     def withdraw(self, amount):
         if amount <= 0:
-            print("Withdrawal amount must be positive.")
-        elif amount > self.__balance:
+            print("Withdrawal must be greater than zero.")
+            return
+
+        if amount > self._balance:
             print("Insufficient funds.")
-        else:
-            self.__balance -= amount
-            print(f"Withdrawn: {amount}")
+            return
 
+        self._balance -= amount
+        self._transactions.append(f"Withdrew {amount}")
+        print(f"Withdrew {amount}. New balance: {self._balance}")
+
+    # Display account info
     def display_account_info(self):
-        print("Account Number:", self.__account_number)
-        print("Account Holder:", self.__account_holder)
-        print("Balance:", self.__balance)
+        print("---- Account Details ----")
+        print(f"Holder: {self._account_holder}")
+        print(f"Account Number: {self._account_number}")
+        print(f"Balance: {self._balance}")
 
+    # Bonus: show transaction history
+    def show_transactions(self):
+        print("---- Transaction History ----")
+        for t in self._transactions:
+            print(t)
 
-# creating an object
-account1 = BankAccount("ACC1001", "Samuel", 1000)
+account = BankAccount("123456", "Samuel", 1000)
 
-# calling the method
-account1.display_account_info()
+account.deposit(500)
+account.withdraw(200)
+account.withdraw(2000)  # should fail
 
-account1.deposit(500)
-account1.withdraw(200)
-
-account1.display_account_info()
+account.display_account_info()
+account.show_transactions()
